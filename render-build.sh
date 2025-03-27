@@ -1,43 +1,40 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/bash
 
-# Create installation directory
-CHROME_DIR="/tmp/chrome-installation"
-mkdir -p "$CHROME_DIR"
-cd "$CHROME_DIR"
+# Set up writable directories
+INSTALL_DIR="$HOME/chrome"
+CHROMEDRIVER_DIR="$HOME/chromedriver"
 
-# Download Chrome for Headless Environments
-wget -q -O google-chrome-stable.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# Create directories if not exist
+mkdir -p "$INSTALL_DIR"
+mkdir -p "$CHROMEDRIVER_DIR"
 
-# Extract Chrome without system installation
-mkdir -p chrome
-dpkg -x google-chrome-stable.deb chrome
+echo "✅ Downloading Google Chrome..."
+curl -o /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-# Find Chrome binary
-CHROME_BINARY=$(find "$CHROME_DIR/chrome" -name "google-chrome" | head -n 1)
-if [ -z "$CHROME_BINARY" ]; then
-    echo "❌ Chrome binary not found!"
-    exit 1
-fi
+echo "✅ Extracting Google Chrome..."
+dpkg -x /tmp/google-chrome.deb "$INSTALL_DIR"
 
-# Get Chrome version
-CHROME_VERSION=$("$CHROME_BINARY" --version | awk '{print $3}' | cut -d'.' -f1)
+# Set Chrome path
+CHROME_BINARY="$INSTALL_DIR/opt/google/chrome/google-chrome"
 
-# Download compatible ChromeDriver
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-wget -q -O chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+echo "✅ Downloading ChromeDriver..."
+CHROME_VERSION=$("$CHROME_BINARY" --version | awk '{print $3}')
+CHROMEDRIVER_URL="https://chromedriver.storage.googleapis.com/${CHROME_VERSION}/chromedriver_linux64.zip"
 
-# Unzip ChromeDriver
-unzip -q chromedriver.zip
+curl -o /tmp/chromedriver.zip "$CHROMEDRIVER_URL"
 
-# Chmod binaries
-chmod +x chromedriver
-chmod +x "$CHROME_BINARY"
+echo "✅ Extracting ChromeDriver..."
+unzip /tmp/chromedriver.zip -d "$CHROMEDRIVER_DIR"
+chmod +x "$CHROMEDRIVER_DIR/chromedriver"
 
-# Create path files for Python to reference
-echo "$CHROME_BINARY" > /tmp/chrome_binary_path
-echo "$CHROME_DIR/chromedriver" > /tmp/chromedriver_binary_path
+# Set environment variables
+export PATH="$CHROMEDRIVER_DIR:$PATH"
+export CHROME_BIN="$CHROME_BINARY"
 
-echo "✅ Chrome and ChromeDriver installed successfully!"
-echo "Chrome Binary: $CHROME_BINARY"
-echo "ChromeDriver: $CHROME_DIR/chromedriver"
+echo "✅ Chrome and ChromeDriver setup completed!"
+echo "🔹 Chrome Path: $CHROME_BINARY"
+echo "🔹 ChromeDriver Path: $CHROMEDRIVER_DIR/chromedriver"
+
+# Verify installation
+"$CHROME_BINARY" --version
+"$CHROMEDRIVER_DIR/chromedriver" --version

@@ -93,25 +93,23 @@ def update_live_data():
         from selenium import webdriver
         from selenium.webdriver.chrome.service import Service
         from selenium.webdriver.chrome.options import Options
-        from webdriver_manager.chrome import ChromeDriverManager
-        from webdriver_manager.core.utils import ChromeType
+
+        CHROME_BIN = "/home/your_user/chrome/opt/google/chrome/google-chrome"
+        CHROMEDRIVER_BIN = "/home/your_user/chromedriver/chromedriver"
 
         def setup_chrome_driver():
-            # Chrome options for headless browsing
             chrome_options = Options()
+            chrome_options.binary_location = CHROME_BIN
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument("--disable-gpu")
 
-            # Use webdriver-manager to handle ChromeDriver installation
-            service = Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install())
-            
-            # Create WebDriver
+            service = Service(CHROMEDRIVER_BIN)
             driver = webdriver.Chrome(service=service, options=chrome_options)
             return driver
         
         driver = setup_chrome_driver()
+        print("✅ Driver Initialized !!")
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
         try:
