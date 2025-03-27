@@ -13,61 +13,73 @@
 
     <!-- Custom CSS -->
     <style>
-        /* Fixed, Compact Navbar */
+        /* Compact, Mobile-Optimized Navbar */
         .navbar {
             background: linear-gradient(135deg, #004aad, #00bfff);
-            height: 50px; /* Fixed small height */
-            padding: 5px 15px;
+            padding: 8px 15px;
         }
         .navbar-brand {
             color: white !important;
             font-weight: bold;
-            font-size: 16px;
-            padding-top: 5px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .navbar-toggler {
+            border: none;
+            font-size: 1.25rem;
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
         }
         .navbar-nav .nav-link {
             color: white !important;
-            font-size: 14px;
-            padding: 5px 10px;
+            font-size: 0.95rem;
+            padding: 8px;
         }
         .navbar-nav .nav-link:hover {
             color: #ffcc00 !important;
             transition: 0.2s;
         }
-        .navbar-toggler {
-            padding: 5px;
-        }
-        .navbar-toggler:focus {
-            box-shadow: none;
+
+        /* Ensuring Content is Visible Below Fixed Navbar */
+        body {
+            padding-top: 60px;
         }
 
-        /* Footer Styling */
+        /* Responsive Footer */
         .footer {
             background: #343a40;
             color: white;
             text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-            font-size: 14px;
+            padding: 12px;
+            font-size: 0.9rem;
         }
 
-        /* Ensure Content Doesn't Hide Behind Fixed Navbar */
-        body {
-            padding-top: 50px;
+        /* Responsive Layout */
+        @media (max-width: 576px) {
+            .navbar-nav .nav-link {
+                font-size: 1rem;
+                padding: 10px 15px;
+            }
+            .navbar-toggler {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Fixed-Height Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="/"><i class="fas fa-trophy"></i> IPL Auction 2025</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+                <i class="fas fa-bars text-white"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
                     </li>
@@ -83,7 +95,7 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container mt-4">
+    <div class="container mt-3">
         {% block content %}
         {% endblock %}
     </div>

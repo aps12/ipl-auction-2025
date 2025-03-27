@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
     <!-- Page Header -->
-    <div class="text-center mb-4">
+    <div class="text-center mb-3">
         <h1 class="fw-bold text-primary">🏏 Team Points Overview</h1>
 
         <!-- Status Message (Hidden Initially) -->
@@ -13,15 +13,15 @@
         </div>
 
         <!-- Buttons to Update Data -->
-        <div class="d-flex flex-wrap justify-content-center gap-2">
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
             <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
-                <button type="submit" name="update_live_data" value="true" class="btn btn-primary">
+                <button type="submit" name="update_live_data" value="true" class="btn btn-primary w-100">
                     🔄 Update Live Data [DO NOT USE]
                 </button>
             </form>
 
             <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
-                <button type="submit" name="update_from_csv" value="true" class="btn btn-success">
+                <button type="submit" name="update_from_csv" value="true" class="btn btn-success w-100">
                     📂 Update Points from CSV
                 </button>
             </form>
@@ -43,25 +43,25 @@
                                 <tr>
                                     <th>Player</th>
                                     <th>Runs</th>
-                                    <th>Strike Rate</th>
-                                    <th>Batting Points</th>
+                                    <th>SR</th>
+                                    <th>Bat Pts</th>
                                     <th>Wickets</th>
-                                    <th>Economy</th>
-                                    <th>Bowling Points</th>
-                                    <th>Player Total</th>
+                                    <th>Eco</th>
+                                    <th>Bowl Pts</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for player in team.players %}
                                 <tr>
-                                    <td class="fw-bold d-block d-md-table-cell">{{ player.name }}</td>
-                                    <td class="d-block d-md-table-cell">{{ player.runs | default(0) }}</td>
-                                    <td class="d-block d-md-table-cell">{{ player.strike_rate | default('-') }}</td>
-                                    <td class="fw-bold text-primary d-block d-md-table-cell">{{ player.batting_points | default(0) }}</td>
-                                    <td class="d-block d-md-table-cell">{{ player.wickets | default(0) }}</td>
-                                    <td class="d-block d-md-table-cell">{{ player.economy | default('-') }}</td>
-                                    <td class="fw-bold text-success d-block d-md-table-cell">{{ player.bowling_points | default(0) }}</td>
-                                    <td class="fw-bold text-danger d-block d-md-table-cell">{{ player.total_points | default(0) | round(2) }}</td>
+                                    <td class="fw-bold text-wrap">{{ player.name }}</td>
+                                    <td>{{ player.runs | default(0) }}</td>
+                                    <td>{{ player.strike_rate | default('-') }}</td>
+                                    <td class="fw-bold text-primary">{{ player.batting_points | default(0) }}</td>
+                                    <td>{{ player.wickets | default(0) }}</td>
+                                    <td>{{ player.economy | default('-') }}</td>
+                                    <td class="fw-bold text-success">{{ player.bowling_points | default(0) }}</td>
+                                    <td class="fw-bold text-danger">{{ player.total_points | default(0) | round(2) }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr class="table-warning fw-bold">
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<!-- JavaScript to Show and Hide Status Messages -->
+<!-- JavaScript for Status Messages -->
 <script>
     function showUpdatingStatus() {
         let statusDiv = document.getElementById("update-status");
@@ -99,7 +99,6 @@
         document.getElementById("update-status").classList.add("d-none");
     }
 
-    // Show success message after page reload (modify server-side response if needed)
     window.onload = function() {
         let urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('update_success')) {
@@ -112,5 +111,17 @@
         }
     };
 </script>
+
+<style>
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .btn {
+            font-size: 14px;
+            padding: 8px;
+        }
+    }
+</style>
 
 {% endblock %}
