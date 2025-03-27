@@ -94,19 +94,15 @@ def update_live_data():
         from selenium.webdriver.chrome.service import Service
         from selenium.webdriver.chrome.options import Options
 
-        import os
-
-        chrome_options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
-        service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver"))
 
         chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Mandatory for running on Render
-        chrome_options.add_argument("--no-sandbox")  # Prevents privilege issues
-        chrome_options.add_argument("--disable-dev-shm-usage")  # Avoid crashes due to memory limits
-        chrome_options.add_argument("--disable-gpu")  # Helps in headless environments
-        chrome_options.binary_location = "/usr/bin/google-chrome"  # Ensure correct binary path
+        chrome_options.add_argument("--headless")  # Required for Render
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.binary_location = "/home/render/chrome/chrome"  # Set the correct binary path
 
-        service = Service("/usr/local/bin/chromedriver")  # ChromeDriver path
+        service = Service("/home/render/chrome/chromedriver")  # Set ChromeDriver path
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
 
