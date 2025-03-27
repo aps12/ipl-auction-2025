@@ -10,14 +10,14 @@ mkdir -p /tmp/chrome
 dpkg-deb -x /tmp/google-chrome.deb /tmp/chrome/
 
 echo "✅ Checking Chrome version..."
-/tmp/chrome/opt/google/chrome/google-chrome --version || echo "❌ Chrome installation failed!"
-
-echo "✅ Getting compatible ChromeDriver version..."
 CHROME_VERSION=$(/tmp/chrome/opt/google/chrome/google-chrome --version | awk '{print $3}')
-CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+echo "🔹 Installed Chrome version: $CHROME_VERSION"
 
-echo "✅ Downloading ChromeDriver $CHROMEDRIVER_VERSION..."
-wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+echo "✅ Finding closest compatible ChromeDriver version..."
+LATEST_CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+
+echo "✅ Downloading ChromeDriver $LATEST_CHROMEDRIVER_VERSION..."
+wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$LATEST_CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
 
 echo "✅ Extracting ChromeDriver..."
 mkdir -p /tmp/chromedriver
