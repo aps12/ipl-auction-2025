@@ -95,42 +95,64 @@ def update_live_data():
         from selenium.webdriver.chrome.options import Options
 
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
+        import os
 
-        # More robust binary location detection
-        possible_chrome_paths = [
-            "/opt/render/chrome/opt/google/chrome/google-chrome",
-            "/opt/render/chrome/usr/bin/google-chrome",
-            "/usr/bin/google-chrome"
-        ]
-
-        chrome_binary = next((path for path in possible_chrome_paths if os.path.exists(path)), None)
-
-        if not chrome_binary:
+        def find_chrome_binary():
+            # Check predefined paths from the bash script
+            potential_paths = [
+                "/tmp/chrome/usr/bin/google-chrome",
+                "/tmp/chrome/opt/google/chrome/google-chrome",
+                "/usr/bin/google-chrome"
+            ]
+            
+            # Check paths written by the bash script
+            chrome_path_file = "/tmp/chrome_binary_path"
+            if os.path.exists(chrome_path_file):
+                with open(chrome_path_file, 'r') as f:
+                    potential_paths.insert(0, f.read().strip())
+            
+            for path in potential_paths:
+                if os.path.exists(path):
+                    return path
+            
             raise FileNotFoundError("Chrome binary not found")
 
-        chrome_options.binary_location = chrome_binary
-
-        # Similar approach for ChromeDriver
-        possible_chromedriver_paths = [
-            "/opt/render/chrome/chromedriver",
-            "/usr/local/bin/chromedriver",
-            "/usr/bin/chromedriver"
-        ]
-
-        chromedriver_binary = next((path for path in possible_chromedriver_paths if os.path.exists(path)), None)
-
-        if not chromedriver_binary:
+        def find_chromedriver_binary():
+            potential_paths = [
+                "/tmp/chrome/chromedriver",
+                "/usr/local/bin/chromedriver",
+                "/usr/bin/chromedriver"
+            ]
+            
+            # Check paths written by the bash script
+            chromedriver_path_file = "/tmp/chromedriver_binary_path"
+            if os.path.exists(chromedriver_path_file):
+                with open(chromedriver_path_file, 'r') as f:
+                    potential_paths.insert(0, f.read().strip())
+            
+            for path in potential_paths:
+                if os.path.exists(path):
+                    return path
+            
             raise FileNotFoundError("ChromeDriver binary not found")
 
-        service = Service(chromedriver_binary)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        def setup_chrome_driver():
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-gpu")
+            
+            chrome_binary = find_chrome_binary()
+            chromedriver_binary = find_chromedriver_binary()
+            
+            chrome_options.binary_location = chrome_binary
+            service = Service(chromedriver_binary)
+            
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            return driver
 
-
+        driver = setup_chrome_driver()
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
         try:
