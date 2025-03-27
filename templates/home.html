@@ -91,28 +91,37 @@
 
     // Horizontal Bar Chart (Total Points)
     new Chart(document.getElementById('barChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: data.teams,
-            datasets: [{
-                label: 'Total Points',
-                data: data.totals,
-                backgroundColor: teamColors,
-                borderColor: teamColors.map(color => color.replace('70%', '50%')),
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { title: { display: true, text: 'Points' }, beginAtZero: true },
-                y: { title: { display: true, text: 'Teams' } }
+    type: 'bar',  // Ensure it's a bar chart
+    data: {
+        labels: data.teams,  // Team names on the Y-axis
+        datasets: [{
+            label: 'Total Points',
+            data: data.totals,  // Points go on the X-axis
+            backgroundColor: teamColors,
+            borderColor: teamColors.map(color => color.replace('70%', '50%')),
+            borderWidth: 1
+        }]
+    },
+    options: {
+        indexAxis: 'y',  // Set Y-axis as index (horizontal bars)
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: { 
+                title: { display: true, text: 'Points', font: { size: 14 } },
+                beginAtZero: true 
             },
-            plugins: { legend: { display: false } }
+            y: { 
+                title: { display: true, text: 'Teams', font: { size: 14 } },
+                ticks: { autoSkip: false, font: { size: 12 } } 
+            }
+        },
+        plugins: { 
+            legend: { display: false },  // Hide legend (optional)
+            tooltip: { enabled: true }
         }
-    });
+    }
+});
 
     // Pie Chart (Percentage of Total Points)
     new Chart(document.getElementById('pieChart').getContext('2d'), {
