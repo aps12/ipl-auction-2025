@@ -100,11 +100,10 @@ def update_live_data():
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
-        chrome_options.binary_location = "/opt/render/chrome/usr/bin/google-chrome-stable"  # Set Chrome binary path
+        chrome_options.binary_location = "/opt/render/chrome/opt/google/chrome/google-chrome"  # Set Chrome binary path
 
         service = Service("/opt/render/chrome/chromedriver")  # Set ChromeDriver path
         driver = webdriver.Chrome(service=service, options=chrome_options)
-
 
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
