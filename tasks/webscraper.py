@@ -96,14 +96,40 @@ def update_live_data():
 
 
         chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Required for Render
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
-        chrome_options.binary_location = "/opt/render/chrome/opt/google/chrome/google-chrome"  # Set Chrome binary path
 
-        service = Service("/opt/render/chrome/chromedriver")  # Set ChromeDriver path
+        # More robust binary location detection
+        possible_chrome_paths = [
+            "/opt/render/chrome/opt/google/chrome/google-chrome",
+            "/opt/render/chrome/usr/bin/google-chrome",
+            "/usr/bin/google-chrome"
+        ]
+
+        chrome_binary = next((path for path in possible_chrome_paths if os.path.exists(path)), None)
+
+        if not chrome_binary:
+            raise FileNotFoundError("Chrome binary not found")
+
+        chrome_options.binary_location = chrome_binary
+
+        # Similar approach for ChromeDriver
+        possible_chromedriver_paths = [
+            "/opt/render/chrome/chromedriver",
+            "/usr/local/bin/chromedriver",
+            "/usr/bin/chromedriver"
+        ]
+
+        chromedriver_binary = next((path for path in possible_chromedriver_paths if os.path.exists(path)), None)
+
+        if not chromedriver_binary:
+            raise FileNotFoundError("ChromeDriver binary not found")
+
+        service = Service(chromedriver_binary)
         driver = webdriver.Chrome(service=service, options=chrome_options)
+
 
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
