@@ -23,8 +23,9 @@
                                        placeholder="Enter team name" 
                                        required>
                             </div>
+
                             <div class="row g-2">
-                                <div class="col-12 col-md-8">
+                                <div class="col-12 col-md-8 mb-2 mb-md-0">
                                     <label for="player_dropdown" class="form-label fw-bold text-muted">
                                         <i class="bi bi-person-plus-fill me-2 text-primary"></i>Select Players
                                     </label>
@@ -42,13 +43,19 @@
                                     </button>
                                 </div>
                             </div>
-                            <div id="selected_players_section" class="mt-3 pt-2 border-top" style="display: none;">
+
+                            <div id="selected_players_section" 
+                                 class="mt-3 pt-2 border-top" 
+                                 style="display: none;">
                                 <h6 class="text-muted fw-semibold mb-2">
                                     <i class="bi bi-list-check me-2 text-success"></i>Selected Players
                                 </h6>
-                                <ul id="selected_players_list" class="list-group"></ul>
+                                <ul id="selected_players_list" 
+                                    class="list-group"></ul>
                             </div>
+
                             <input type="hidden" name="selected_players" id="hidden_selected_players">
+
                             <div class="d-grid mt-3">
                                 <button type="submit" class="btn btn-success">
                                     <i class="bi bi-check-circle me-2"></i>Create Team
@@ -57,6 +64,7 @@
                         </form>
                     </div>
                 </div>
+
                 <!-- Final Teams Section -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-success text-white text-center py-3">
@@ -70,7 +78,9 @@
                             <div class="col">
                                 <div class="card h-100 border-0 shadow-sm">
                                     <div class="card-header bg-info text-white text-center py-2">
-                                        <h5 class="h6 mb-0 text-uppercase fw-bold">{{ team.name }}</h5>
+                                        <h5 class="h6 mb-0 text-uppercase fw-bold">
+                                            {{ team.name }}
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <h6 class="text-muted fw-semibold mb-2">
@@ -80,12 +90,14 @@
                                             {% for player in team.players %}
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 {{ player.name }}
-                                                <span class="badge bg-primary rounded-pill">Player</span>
+                                                <span class="badge bg-primary rounded-pill">
+                                                    Player
+                                                </span>
                                             </li>
                                             {% endfor %}
                                         </ul>
-                                        <form action="{{ url_for('delete_team', team_id=team.id) }}" method="POST" class="mt-3">
-                                            <button type="submit" class="btn btn-danger w-100">
+                                        <form class="mt-3 delete-team-form" method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
+                                            <button type="button" class="btn btn-danger w-100 delete-team-btn">
                                                 <i class="bi bi-trash me-2"></i>Delete Team
                                             </button>
                                         </form>
@@ -112,69 +124,120 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <style>
-@media (max-width: 768px) {
-    .container {
-        padding: 0 10px;
+    /* Mobile-specific adjustments */
+    @media (max-width: 768px) {
+        .card-header {
+            padding: 0.75rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .btn {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        #selected_players_section {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .list-group-item {
+            padding: 0.5rem 0.75rem;
+        }
     }
-    .card-header {
+
+    /* Select2 Mobile Optimization */
+    .select2-container {
+        width: 100% !important;
+    }
+    
+    .select2-search--dropdown .select2-search__field {
+        width: 100%;
         padding: 0.5rem;
-        text-align: center;
     }
-    .card-body {
-        padding: 1rem;
-    }
-    .btn {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-    #selected_players_section {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    .list-group-item {
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-}
 </style>
 
 <script>
 $(document).ready(function() {
+    // Initialize Select2 for player dropdown with mobile-friendly options
     $('#player_dropdown').select2({
         placeholder: "Select a Player",
         allowClear: true,
         width: '100%',
-        minimumResultsForSearch: 10,
-        dropdownAutoWidth: true
+        minimumResultsForSearch: 10,  // Show search box only if more than 10 items
+        dropdownAutoWidth: true,
+        containerCssClass: 'form-select'
     });
+
     let selectedPlayers = [];
+
     $('#add_player_btn').click(function() {
         let selectedPlayer = $('#player_dropdown').val();
+        
         if (!selectedPlayer) {
             alert('Please select a player');
             return;
         }
+
         if (selectedPlayers.includes(selectedPlayer)) {
             alert('Player already added');
             return;
         }
+
         selectedPlayers.push(selectedPlayer);
         updateSelectedPlayersList();
         $('#player_dropdown').val('').trigger('change');
     });
+
     function updateSelectedPlayersList() {
         let $list = $('#selected_players_list');
         $list.empty();
+
         if (selectedPlayers.length > 0) {
             $('#selected_players_section').show();
         } else {
             $('#selected_players_section').hide();
         }
+
         selectedPlayers.forEach(function(player) {
-            let $listItem = $(`<li class="list-group-item d-flex justify-content-between align-items-center">${player}<button type="button" class="btn btn-sm btn-outline-danger remove-player" data-player="${player}"><i class="bi bi-trash"></i></button></li>`);
+            let $listItem = $(`
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${player}
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-player" data-player="${player}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </li>
+            `);
             $list.append($listItem);
         });
+
+        $('#hidden_selected_players').val(JSON.stringify(selectedPlayers));
+
+        $('.remove-player').click(function() {
+            let playerToRemove = $(this).data('player');
+            selectedPlayers = selectedPlayers.filter(p => p !== playerToRemove);
+            updateSelectedPlayersList();
+        });
     }
+
+    $('#teamForm').submit(function(e) {
+        if (selectedPlayers.length === 0) {
+            e.preventDefault();
+            alert('Please add at least one player to the team');
+        }
+    });
+
+    // Confirmation popup for deleting a team
+    $('.delete-team-btn').click(function() {
+        const $form = $(this).closest('.delete-team-form');
+        const confirmation = confirm('Are you sure you want to delete this team?');
+        if (confirmation) {
+            $form.submit();
+        }
+    });
 });
 </script>
 {% endblock %}

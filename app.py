@@ -85,27 +85,7 @@ def add_teams():
 
     # Fixed list of players to choose from
     fixed_players_list =  [
-    "Abhishek Sharma", "Adam Zampa", "Aiden Markram", "Ajinkya Rahane", "Andre Russell", 
-    "Angkrish Raghuvanshi", "Aniket Verma", "Arshdeep Singh", "Ashutosh Sharma", "Axar Patel", 
-    "Ayush Badoni", "Azmatullah Omarzai", "David Miller", "Deepak Chahar", "Deepak Hooda", 
-    "Devdutt Padikkal", "Dhruv Jurel", "Digvesh Singh", "Faf Du Plessis", "Glenn Maxwell", 
-    "Harshal Patel", "Harshit Rana", "Heinrich Klaasen", "Ishan Kishan", "Jake Fraser-McGurk", 
-    "Jofra Archer", "Jos Buttler", "Josh Hazlewood", "Kagiso Rabada", "Khaleel Ahmed", 
-    "Krunal Pandya", "Kuldeep Yadav", "Liam Livingstone", "M Sidharth", "Maheesh Theekshana", 
-    "Marco Jansen", "Marcus Stoinis", "Mitchell Marsh", "Mitchell Santner", "Mitchell Starc", 
-    "Mohammad Shami", "Mohd Arshad Khan", "Mohit Sharma", "Mukesh Kumar", "N Tilak Varma", 
-    "Naman Dhir", "Nathan Ellis", "Nicholas Pooran", "Nitish Kumar Reddy", "Nitish Rana", 
-    "Noor Ahmad", "Phil Salt", "Prabhsimran Singh", "Priyansh Arya", "Quinton De Kock", 
-    "Rachin Ravindra", "Rahul Tewatia", "Rahul Tripathi", "Rajat Patidar", "Ramandeep Singh", 
-    "Rashid Khan", "Rasikh Dar", "Ravi Bishnoi", "Ravichandran Ashwin", "Ravindra Jadeja", 
-    "Rinku Singh", "Riyan Parag", "Robin Minz", "Ruturaj Gaikwad", "Ryan Rickelton", 
-    "Sai Kishore", "Sai Sudharsan", "Sam Curran", "Sameer Rizvi", "Sandeep Sharma", 
-    "Sanju Samson", "Shahbaz Ahmed", "Shahrukh Khan", "Shardul Thakur", "Shashank Singh", 
-    "Sherfane Rutherford", "Shimron Hetmyer", "Shivam Dube", "Shreyas Iyer", "Shubham Dubey", 
-    "Shubman Gill", "Simarjeet Singh", "Spencer Johnson", "Sunil Narine", "Surya Kumar Yadav", 
-    "Suyash Sharma", "Travis Head", "Trent Boult", "Tristan Stubbs", "Tushar Deshpande", 
-    "V Satyanarayana Penmetsa", "Vaibhav Arora", "Varun Chakravarthy", "Venkatesh Iyer", 
-    "Vignesh Puthur", "Vipraj Nigam", "Virat Kohli", "Will Jacks", "Yash Dayal", "Yashasvi Jaiswal"
+    "Abdul Samad", "Abhinav Manohar", "Abhishek Sharma", "Abishek Porel", "Aiden Markram", "Ajinkya Rahane", "Akash Deep", "Akash Madhwal", "Alzarri Joseph", "Amit Mishra", "Andre Russell", "Angkrish Raghuvanshi", "Anmolpreet Singh", "Anrich Nortje", "Anshul Kamboj", "Anuj Rawat", "Anukul Roy", "Arshad Khan", "Arshdeep Singh", "Arshin Atul Kulkarni", "Ashton Turner", "Ashutosh Sharma", "Atharva Taide", "Avesh Khan", "Axar Patel", "Ayush Badoni", "Azmatullah Omarzai", "B R Sharath", "Bhuvneshwar Kumar", "Cameron Green", "Darshan Nalkande", "Daryl Mitchell", "David Miller", "David Warner", "Deepak Chahar", "Deepak Hooda", "Devdutt Padikkal", "Dewald Brevis", "Dhruv Jurel", "Dinesh Karthik", "Donovan Ferreira", "Faf Du Plessis", "Gerald Coetzee", "Glenn Maxwell", "Gulbadin Naib", "Hardik Pandya", "Harpreet Bhatia", "Harpreet Brar", "Harshal Patel", "Harshit Rana", "Heinrich Klaasen", "Ishan Kishan", "Ishant Sharma", "Jake Fraser - McGurk", "Jasprit Bumrah", "Jaydev Unadkat", "Jhye Richardson", "Jitesh Sharma", "Jonny Bairstow", "Jos Buttler", "Josh Little", "K L Rahul", "Kagiso Rabada", "Kane Williamson", "Karn Sharma", "Keshav Maharaj", "Khaleel Ahmed", "Krunal Pandya", "Kuldeep Sen", "Kuldeep Yadav", "Kumar Kushagra", "Kwena Maphaka", "Lalit Yadav", "Liam Livingstone", "Lizaad Williams", "Lockie Ferguson", "Luke Wood", "M Siddharth", "MS Dhoni", "Maheesh Theekshana", "Mahipal Lomror", "Manav Suthar", "Manish Pandey", "Marco Jansen", "Marcus Stoinis", "Matheesha Pathirana", "Matt Henry", "Matthew Wade", "Mayank Agarwal", "Mayank Dagar", "Mayank Markande", "Mayank Yadav", "Mitchell Marsh", "Mitchell Santner", "Mitchell Starc", "Moeen Ali", "Mohammad Nabi", "Mohammed Siraj", "Mohit Sharma", "Mohsin Khan", "Mukesh Kumar", "Mustafizur Rahman", "Naman Dhir", "Nandre Burger", "Nathan Ellis", "Naveen-Ul-Haq", "Nehal Wadhera", "Nicholas Pooran", "Nitish Kumar Reddy", "Nitish Rana", "Noor Ahmad", "Nuwan Thushara", "Pat Cummins", "Phil Salt", "Piyush Chawla", "Prabhsimran Singh", "Prithvi Shaw", "Quinton De Kock", "Rachin Ravindra", "Rahmanullah Gurbaz", "Rahul Chahar", "Rahul Tewatia", "Rahul Tripathi", "Rajat Patidar", "Ramandeep Singh", "Rashid Khan", "Rasikh Salam", "Ravi Bishnoi", "Ravichandran Ashwin", "Ravindra Jadeja", "Reece Topley", "Richard Gleeson", "Ricky Bhui", "Rilee Rossouw", "Rinku Singh", "Rishabh Pant", "Riyan Parag", "Rohit Sharma", "Romario Shepherd", "Rovman Powell", "Ruturaj Gaikwad", "Sai Kishore", "Sai Sudharsan", "Sam Curran", "Sameer Rizwi", "Sandeep Sharma", "Sandeep Warrier", "Sanju Samson", "Sanvir Singh", "Saurav Chauhan", "Shahbaz Ahmed", "Shahrukh Khan", "Shai Hope", "Shams Mulani", "Shardul Thakur", "Shashank Singh", "Shikhar Dhawan", "Shimron Hetmyer", "Shivam Dube", "Shivam Singh", "Shreyas Gopal", "Shreyas Iyer", "Shubham Dubey", "Shubman Gill", "Sikandar Raza", "Simarjeet Singh", "Spencer Johnson", "Sumit Kumar", "Sunil Narine", "Suryakumar Yadav", "Suyash S Prabhudessai", "Swapnil Singh", "T Natarajan", "Tanush Kotian", "Tilak Varma", "Tim David", "Tom Kohler- Cadmore", "Travis Head", "Trent Boult", "Tristan Stubbs", "Tushar Deshpande", "Umesh Yadav", "Vaibhav Arora", "Varun Chakaravarthy", "Venkatesh Iyer", "Vidwath Kaverappa", "Vijay Shankar", "Vijayakanth Viyaskanth", "Virat Kohli", "Vyshak Vijaykumar", "Washington Sundar", "Will Jacks", "Wriddhiman Saha", "Yash Dayal", "Yash Thakur", "Yashasvi Jaiswal", "Yudhvir Singh", "Yuzvendra Chahal"
     ]
 
     return render_template("add_teams.html", fixed_players_list=fixed_players_list, teams=teams)
