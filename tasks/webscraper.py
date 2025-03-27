@@ -72,53 +72,53 @@ def update_live_data():
     def get_ipl_stats(stat_type):
         """Scrape IPL 2025 Batting or Bowling stats in headless mode."""
 
-        # options = webdriver.ChromeOptions()
-        # options.add_argument("--headless=new")  # New headless mode
-        # options.add_argument("--disable-gpu")
-        # options.add_argument("--no-sandbox")
-        # options.add_argument("--disable-dev-shm-usage")
-        # options.add_argument("--window-size=1920,1080")  
-        # options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
-        # options.add_argument("--log-level=3")  # Suppress logs
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless=new")  # New headless mode
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--window-size=1920,1080")  
+        options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
+        options.add_argument("--log-level=3")  # Suppress logs
 
-        # # Add user agent to appear more like a real browser
-        # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+        # Add user agent to appear more like a real browser
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
         
-        # # Experimental options to improve headless reliability
-        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        # options.add_experimental_option('useAutomationExtension', False)
+        # Experimental options to improve headless reliability
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
 
-        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-        from selenium import webdriver
-        from selenium.webdriver.chrome.service import Service
-        from selenium.webdriver.chrome.options import Options
+        # from selenium import webdriver
+        # from selenium.webdriver.chrome.service import Service
+        # from selenium.webdriver.chrome.options import Options
 
-        def setup_chrome_driver():
-            chrome_options = Options()
+        # # def setup_chrome_driver():
+        # #     chrome_options = Options()
             
-            # Explicitly set the Chrome binary path
-            chrome_options.binary_location = "/tmp/chrome/opt/google/chrome/google-chrome"
+        # #     # Explicitly set the Chrome binary path
+        # #     chrome_options.binary_location = "/tmp/chrome/opt/google/chrome/google-chrome"
             
-            # Headless mode (important for servers without GUI)
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
+        # #     # Headless mode (important for servers without GUI)
+        # #     chrome_options.add_argument("--headless")
+        # #     chrome_options.add_argument("--no-sandbox")
+        # #     chrome_options.add_argument("--disable-dev-shm-usage")
             
-            # ChromeDriver path
-            driver_path = "/tmp/chromedriver/chromedriver"
-            service = Service(driver_path)
+        # #     # ChromeDriver path
+        # #     driver_path = "/tmp/chromedriver/chromedriver"
+        # #     service = Service(driver_path)
             
-            # Start WebDriver
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-            return driver
+        # #     # Start WebDriver
+        # #     driver = webdriver.Chrome(service=service, options=chrome_options)
+        # #     return driver
         
-        driver = setup_chrome_driver()
+        # # driver = setup_chrome_driver()
         print("✅ Driver Initialized !!")
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
         try:
-            driver.get("https://www.iplt20.com/stats/2024")
+            driver.get("https://www.iplt20.com/stats/2025")
 
             # Wait until the page loads
             time.sleep(3)
