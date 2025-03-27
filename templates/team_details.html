@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Team Details - {{ team.name }}</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Player Name</th>
+            <th>Runs</th>
+            <th>Strike Rate</th>
+            <th>Batting Points</th>
+            <th>Wickets</th>
+            <th>Economy</th>
+            <th>Bowling Points</th>
+            <th>Total Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.runs }}</td>
+            <td>{{ player.strike_rate }}</td>
+            <td>{{ player.batting_points | round(2) }}</td>
+            <td>{{ player.wickets }}</td>
+            <td>{{ player.economy }}</td>
+            <td>{{ player.bowling_points | round(2) }}</td>
+            <td>{{ player.total_points | round(2) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Total Points: {{ team_total | round(2) }}</h2>
+{% endblock %}

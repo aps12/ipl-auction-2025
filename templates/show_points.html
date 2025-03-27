@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">🏏 Team Points Overview</h1>
+
+        <!-- Status Message (Hidden Initially) -->
+        <div id="update-status" class="alert alert-info d-none text-center">
+            <span id="status-message">Updating Points... Please wait.</span>
+            <button type="button" class="btn-close ms-3" aria-label="Close" onclick="hideStatus()"></button>
+        </div>
+
+        <!-- Buttons to Update Data -->
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
+                <button type="submit" name="update_live_data" value="true" class="btn btn-primary">
+                    🔄 Update Live Data
+                </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
+                <button type="submit" name="update_from_csv" value="true" class="btn btn-success">
+                    📂 Update Points from CSV
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teams Display -->
+    <div class="row">
+        {% for team in teams %}
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h3 class="fw-bold">{{ team.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Runs</th>
+                                    <th>Strike Rate</th>
+                                    <th>Batting Points</th>
+                                    <th>Wickets</th>
+                                    <th>Economy</th>
+                                    <th>Bowling Points</th>
+                                    <th>Player Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for player in team.players %}
+                                <tr>
+                                    <td class="fw-bold d-block d-md-table-cell">{{ player.name }}</td>
+                                    <td class="d-block d-md-table-cell">{{ player.runs | default(0) }}</td>
+                                    <td class="d-block d-md-table-cell">{{ player.strike_rate | default('-') }}</td>
+                                    <td class="fw-bold text-primary d-block d-md-table-cell">{{ player.batting_points | default(0) }}</td>
+                                    <td class="d-block d-md-table-cell">{{ player.wickets | default(0) }}</td>
+                                    <td class="d-block d-md-table-cell">{{ player.economy | default('-') }}</td>
+                                    <td class="fw-bold text-success d-block d-md-table-cell">{{ player.bowling_points | default(0) }}</td>
+                                    <td class="fw-bold text-danger d-block d-md-table-cell">{{ player.total_points | default(0) | round(2) }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-warning fw-bold">
+                                    <td>🏆 Team Total</td>
+                                    <td>{{ team.total_runs | default(0) }}</td>
+                                    <td>{{ team.total_strike_rate | default('-') }}</td>
+                                    <td class="text-primary">{{ team.total_batting_points | default(0) }}</td>
+                                    <td>{{ team.total_wickets | default(0) }}</td>
+                                    <td>{{ team.total_economy | default('-') }}</td>
+                                    <td class="text-success">{{ team.total_bowling_points | default(0) }}</td>
+                                    <td class="text-danger">{{ team.total_player_points | default(0) | round(2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> <!-- End table-responsive -->
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JavaScript to Show and Hide Status Messages -->
+<script>
+    function showUpdatingStatus() {
+        let statusDiv = document.getElementById("update-status");
+        let statusMessage = document.getElementById("status-message");
+
+        statusMessage.innerHTML = "🔄 Updating Points... Please wait.";
+        statusDiv.classList.remove("d-none");
+        statusDiv.classList.replace("alert-success", "alert-info");
+    }
+
+    function hideStatus() {
+        document.getElementById("update-status").classList.add("d-none");
+    }
+
+    // Show success message after page reload (modify server-side response if needed)
+    window.onload = function() {
+        let urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('update_success')) {
+            let statusDiv = document.getElementById("update-status");
+            let statusMessage = document.getElementById("status-message");
+
+            statusMessage.innerHTML = "✅ Points Updated Successfully!";
+            statusDiv.classList.remove("d-none");
+            statusDiv.classList.replace("alert-info", "alert-success");
+        }
+    };
+</script>
+
+{% endblock %}
