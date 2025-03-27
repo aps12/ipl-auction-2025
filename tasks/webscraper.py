@@ -94,17 +94,22 @@ def update_live_data():
         from selenium.webdriver.chrome.service import Service
         from selenium.webdriver.chrome.options import Options
 
-        CHROME_BIN = "/home/your_user/chrome/opt/google/chrome/google-chrome"
-        CHROMEDRIVER_BIN = "/home/your_user/chromedriver/chromedriver"
-
         def setup_chrome_driver():
             chrome_options = Options()
-            chrome_options.binary_location = CHROME_BIN
+            
+            # Explicitly set the Chrome binary path
+            chrome_options.binary_location = "/tmp/chrome/opt/google/chrome/google-chrome"
+            
+            # Headless mode (important for servers without GUI)
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
-
-            service = Service(CHROMEDRIVER_BIN)
+            
+            # ChromeDriver path
+            driver_path = "/tmp/chromedriver/chromedriver"
+            service = Service(driver_path)
+            
+            # Start WebDriver
             driver = webdriver.Chrome(service=service, options=chrome_options)
             return driver
         
