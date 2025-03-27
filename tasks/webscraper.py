@@ -93,48 +93,7 @@ def update_live_data():
         from selenium import webdriver
         from selenium.webdriver.chrome.service import Service
         from selenium.webdriver.chrome.options import Options
-
-
-        import os
-
-        def find_chrome_binary():
-            # Check predefined paths from the bash script
-            potential_paths = [
-                "/tmp/chrome/usr/bin/google-chrome",
-                "/tmp/chrome/opt/google/chrome/google-chrome",
-                "/usr/bin/google-chrome"
-            ]
-            
-            # Check paths written by the bash script
-            chrome_path_file = "/tmp/chrome_binary_path"
-            if os.path.exists(chrome_path_file):
-                with open(chrome_path_file, 'r') as f:
-                    potential_paths.insert(0, f.read().strip())
-            
-            for path in potential_paths:
-                if os.path.exists(path):
-                    return path
-            
-            raise FileNotFoundError("Chrome binary not found")
-
-        def find_chromedriver_binary():
-            potential_paths = [
-                "/tmp/chrome/chromedriver",
-                "/usr/local/bin/chromedriver",
-                "/usr/bin/chromedriver"
-            ]
-            
-            # Check paths written by the bash script
-            chromedriver_path_file = "/tmp/chromedriver_binary_path"
-            if os.path.exists(chromedriver_path_file):
-                with open(chromedriver_path_file, 'r') as f:
-                    potential_paths.insert(0, f.read().strip())
-            
-            for path in potential_paths:
-                if os.path.exists(path):
-                    return path
-            
-            raise FileNotFoundError("ChromeDriver binary not found")
+        from webdriver_manager.chrome import ChromeDriverManager
 
         def setup_chrome_driver():
             chrome_options = Options()
@@ -143,15 +102,10 @@ def update_live_data():
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-gpu")
             
-            chrome_binary = find_chrome_binary()
-            chromedriver_binary = find_chromedriver_binary()
-            
-            chrome_options.binary_location = chrome_binary
-            service = Service(chromedriver_binary)
-            
+            service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
             return driver
-
+        
         driver = setup_chrome_driver()
         driver.implicitly_wait(30)  # Adjust wait time as needed
 

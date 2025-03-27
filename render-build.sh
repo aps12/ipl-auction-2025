@@ -1,50 +1,27 @@
 #!/usr/bin/env bash
-set -e  # Exit immediately if a command exits with a non-zero status
+set -e
 
-# Set up directories
-INSTALL_DIR="/tmp/chrome"
-mkdir -p "$INSTALL_DIR"
+# Install dependencies for Chrome
+sudo apt-get update
+sudo apt-get install -y \
+    wget \
+    unzip \
+    xvfb \
+    libgconf-2-4
 
-# Download Chrome .deb package
-wget -q -O "$INSTALL_DIR/google-chrome.deb" "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+# Install Chrome Browser
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+sudo apt-get update
+sudo apt-get install -y google-chrome-stable
 
-# Extract Chrome without installing system-wide
-cd "$INSTALL_DIR"
-ar x google-chrome.deb
-tar -xf data.tar.xz
+# Install ChromeDriver
+CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
+CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+unzip -q chromedriver_linux64.zip
+sudo mv chromedriver /usr/local/bin/chromedriver
+sudo chown root:root /usr/local/bin/chromedriver
+sudo chmod +x /usr/local/bin/chromedriver
 
-# Find Chrome binary
-CHROME_BINARY=$(find "$INSTALL_DIR" -path "*/google-chrome" | head -n 1)
-if [ -z "$CHROME_BINARY" ]; then
-    echo "❌ Google Chrome binary not found!"
-    exit 1
-fi
-chmod +x "$CHROME_BINARY"
-
-# Get Chrome version
-CHROME_VERSION=$("$CHROME_BINARY" --version | awk '{print $3}' | cut -d'.' -f1)
-
-# Fetch compatible ChromeDriver version
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-
-# Download ChromeDriver
-wget -q -O "$INSTALL_DIR/chromedriver.zip" "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-
-# Unzip ChromeDriver
-unzip -q -o "$INSTALL_DIR/chromedriver.zip" -d "$INSTALL_DIR/"
-
-# Find ChromeDriver binary
-CHROMEDRIVER_BINARY=$(find "$INSTALL_DIR" -name "chromedriver" | head -n 1)
-if [ -z "$CHROMEDRIVER_BINARY" ]; then
-    echo "❌ ChromeDriver binary not found!"
-    exit 1
-fi
-chmod +x "$CHROMEDRIVER_BINARY"
-
-# Create a list of paths for Python script to check
-echo "$CHROME_BINARY" > /tmp/chrome_binary_path
-echo "$CHROMEDRIVER_BINARY" > /tmp/chromedriver_binary_path
-
-echo "✅ Google Chrome & ChromeDriver Extracted Successfully!"
-echo "Chrome Binary: $CHROME_BINARY"
-echo "ChromeDriver Binary: $CHROMEDRIVER_BINARY"
+echo "Chrome and ChromeDriver installed successfully!"
