@@ -72,23 +72,44 @@ def update_live_data():
     def get_ipl_stats(stat_type):
         """Scrape IPL 2025 Batting or Bowling stats in headless mode."""
 
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")  # New headless mode
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1920,1080")  
-        options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
-        options.add_argument("--log-level=3")  # Suppress logs
+        # options = webdriver.ChromeOptions()
+        # options.add_argument("--headless=new")  # New headless mode
+        # options.add_argument("--disable-gpu")
+        # options.add_argument("--no-sandbox")
+        # options.add_argument("--disable-dev-shm-usage")
+        # options.add_argument("--window-size=1920,1080")  
+        # options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
+        # options.add_argument("--log-level=3")  # Suppress logs
 
-        # Add user agent to appear more like a real browser
-        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+        # # Add user agent to appear more like a real browser
+        # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
         
-        # Experimental options to improve headless reliability
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
+        # # Experimental options to improve headless reliability
+        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        # options.add_experimental_option('useAutomationExtension', False)
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+        from selenium import webdriver
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.chrome.options import Options
+
+        import os
+
+        chrome_options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
+        service = Service(os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver"))
+
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Mandatory for running on Render
+        chrome_options.add_argument("--no-sandbox")  # Prevents privilege issues
+        chrome_options.add_argument("--disable-dev-shm-usage")  # Avoid crashes due to memory limits
+        chrome_options.add_argument("--disable-gpu")  # Helps in headless environments
+        chrome_options.binary_location = "/usr/bin/google-chrome"  # Ensure correct binary path
+
+        service = Service("/usr/local/bin/chromedriver")  # ChromeDriver path
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+
+
         driver.implicitly_wait(30)  # Adjust wait time as needed
 
         try:
