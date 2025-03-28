@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid bg-light py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Edit Team Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-warning text-white text-center py-3">
+                        <h2 class="h4 mb-0 fw-bold">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Team: {{ team.name }}
+                        </h2>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        <form method="POST" id="editTeamForm" action="{{ url_for('edit_team', team_id=team.id) }}">
+                            <div class="mb-3">
+                                <label for="team_name" class="form-label fw-bold text-muted">
+                                    <i class="bi bi-tag-fill me-2 text-primary"></i>Team Name
+                                </label>
+                                <input type="text" name="team_name" id="team_name" 
+                                       class="form-control" 
+                                       placeholder="Enter team name" 
+                                       value="{{ team.name }}"
+                                       required>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-12 col-md-8 mb-2 mb-md-0">
+                                    <label for="player_dropdown" class="form-label fw-bold text-muted">
+                                        <i class="bi bi-person-plus-fill me-2 text-primary"></i>Select Players
+                                    </label>
+                                    <select id="player_dropdown" class="form-select">
+                                        <option value="">Select a Player</option>
+                                        {% for player in fixed_players_list %}
+                                        <option value="{{ player }}">{{ player }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4 d-grid">
+                                    <button type="button" id="add_player_btn" 
+                                            class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-2"></i>Add Player
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="selected_players_section" 
+                                 class="mt-3 pt-2 border-top">
+                                <h6 class="text-muted fw-semibold mb-2">
+                                    <i class="bi bi-list-check me-2 text-success"></i>Selected Players
+                                </h6>
+                                <ul id="selected_players_list" 
+                                    class="list-group"></ul>
+                            </div>
+
+                            <input type="hidden" name="selected_players" id="hidden_selected_players">
+
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-2"></i>Update Team
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include the same libraries and script as in create_team.html -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 for player dropdown
+        $('#player_dropdown').select2({
+            placeholder: "Select a Player",
+            allowClear: true,
+            width: '100%'
+        });
+    
+        let selectedPlayers = {{ current_players | tojson }};
+        updateSelectedPlayersList();
+    
+        $('#add_player_btn').click(function() {
+            let selectedPlayer = $('#player_dropdown').val();
+    
+            if (!selectedPlayer || selectedPlayers.includes(selectedPlayer)) {
+                return; // Avoid duplicate additions
+            }
+    
+            selectedPlayers.push(selectedPlayer);
+            updateSelectedPlayersList();
+            $('#player_dropdown').val(null).trigger('change');
+        });
+    
+        function updateSelectedPlayersList() {
+            let $list = $('#selected_players_list');
+            $list.empty();
+    
+            if (selectedPlayers.length > 0) {
+                $('#selected_players_section').show();
+            } else {
+                $('#selected_players_section').hide();
+            }
+    
+            selectedPlayers.forEach(function(player) {
+                let $listItem = $(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${player}
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-player" data-player="${player}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </li>`
+                );
+                $list.append($listItem);
+            });
+    
+            $('#hidden_selected_players').val(JSON.stringify(selectedPlayers));
+    
+            $('.remove-player').click(function() {
+                let playerToRemove = $(this).data('player');
+                selectedPlayers = selectedPlayers.filter(p => p !== playerToRemove);
+                updateSelectedPlayersList();
+            });
+        }
+    
+        $('#editTeamForm').on('submit', function(e) {
+            $('#hidden_selected_players').val(JSON.stringify(selectedPlayers)); // Ensure data is sent
+    
+            if (selectedPlayers.length !== 11) {
+                e.preventDefault();
+    
+                const confirmationMessage = `You have selected ${selectedPlayers.length} players. A team typically requires 11 players. Do you want to continue?`;
+                const confirmation = confirm(confirmationMessage);
+    
+                if (confirmation) {
+                    $(this).off('submit').submit();
+                }
+            }
+        });
+    }); // Closing brace for $(document).ready
+</script>
+{% endblock %}

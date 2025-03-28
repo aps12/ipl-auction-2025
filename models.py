@@ -8,20 +8,26 @@ class Team(db.Model):
     players = db.relationship("Player", backref="team", cascade="all, delete")
 
     @property
+    def top_8_players(self):
+        """Helper method to get top 8 players sorted by total points."""
+        # Fetch top 8 players sorted by total points directly from database or process in Python
+        return sorted(self.players, key=lambda p: p.total_points, reverse=True)[:8]
+
+    @property
     def total_runs(self):
-        return round(sum(player.runs for player in self.players), 2)
+        return round(sum(player.runs for player in self.top_8_players), 2)
 
     @property
     def total_wickets(self):
-        return round(sum(player.wickets for player in self.players), 2)
+        return round(sum(player.wickets for player in self.top_8_players), 2)
 
     @property
     def total_batting_points(self):
-        return round(sum(player.batting_points for player in self.players), 2)
+        return round(sum(player.batting_points for player in self.top_8_players), 2)
 
     @property
     def total_bowling_points(self):
-        return round(sum(player.bowling_points for player in self.players), 2)
+        return round(sum(player.bowling_points for player in self.top_8_players), 2)
 
     @property
     def total_player_points(self):
@@ -29,20 +35,19 @@ class Team(db.Model):
 
     @property
     def total_strike_rate(self):
-        """Calculate team average strike rate (excluding players with 0 strike rate)."""
-        valid_players = [p for p in self.players if p.strike_rate > 0]
-        return round(sum(p.strike_rate for p in valid_players) / len(valid_players), 2) if valid_players else 0
+        """Calculate team average strike rate (using only top 8 players)."""
+        top_8_valid_players = [p for p in self.top_8_players if p.strike_rate > 0]
+        return round(sum(p.strike_rate for p in top_8_valid_players) / len(top_8_valid_players), 2) if top_8_valid_players else None
 
     @property
     def total_economy(self):
-        """Calculate team average economy rate (excluding players with 0 economy)."""
-        valid_players = [p for p in self.players if p.economy > 0]
-        return round(sum(p.economy for p in valid_players) / len(valid_players), 2) if valid_players else 0
-
+        """Calculate team average economy rate (using only top 8 players)."""
+        top_8_valid_players = [p for p in self.top_8_players if p.economy > 0]
+        return round(sum(p.economy for p in top_8_valid_players) / len(top_8_valid_players), 2) if top_8_valid_players else None
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, index=True)
     runs = db.Column(db.Integer, default=0)
     strike_rate = db.Column(db.Float, default=0.0)
     wickets = db.Column(db.Integer, default=0)
@@ -57,7 +62,8 @@ class Player(db.Model):
     @property
     def bowling_points(self):
         """Calculate bowling points: wickets * 20 * (economy rate adjustment)."""
-        return round(self.wickets * 20 * (8 / self.economy), 2) if self.economy and self.wickets else 0
+        min_economy = max(self.economy, 2)  # Clamp to avoid too high calculations
+        return round(self.wickets * 20 * (8 / min_economy), 2) if self.economy and self.wickets else 0
 
     @property
     def total_points(self):

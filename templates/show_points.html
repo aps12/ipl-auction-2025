@@ -1,89 +1,87 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container mt-4">
     <!-- Page Header -->
     <div class="text-center mb-3">
         <h1 class="fw-bold text-primary">🏏 Team Points Overview</h1>
-
-        <!-- Status Message (Hidden Initially) -->
-        <div id="update-status" class="alert alert-info d-none text-center">
-            <span id="status-message">Updating Points... Please wait.</span>
-            <button type="button" class="btn-close ms-3" aria-label="Close" onclick="hideStatus()"></button>
-        </div>
-
-        <!-- Buttons to Update Data -->
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-            <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
-                <button type="submit" name="update_live_data" value="true" class="btn btn-primary w-100">
-                    🔄 Update Live Data [DO NOT USE]
-                </button>
-            </form>
-
-            <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
-                <button type="submit" name="update_from_csv" value="true" class="btn btn-success w-100">
-                    📂 Update Points from CSV
-                </button>
-            </form>
-        </div>
+    <!-- Status Message (Hidden Initially) -->
+    <div id="update-status" class="alert alert-info d-none text-center">
+        <span id="status-message">Updating Points... Please wait.</span>
+        <button type="button" class="btn-close ms-3" aria-label="Close" onclick="hideStatus()"></button>
     </div>
 
-    <!-- Teams Display -->
-    <div class="row">
-        {% for team in teams %}
-        <div class="col-lg-6 col-md-12 mb-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-dark text-white text-center">
-                    <h3 class="fw-bold">{{ team.name }}</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover text-center align-middle">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Runs</th>
-                                    <th>SR</th>
-                                    <th>Bat Pts</th>
-                                    <th>Wickets</th>
-                                    <th>Eco</th>
-                                    <th>Bowl Pts</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for player in team.players %}
-                                <tr>
-                                    <td class="fw-bold text-wrap">{{ player.name }}</td>
-                                    <td>{{ player.runs | default(0) }}</td>
-                                    <td>{{ player.strike_rate | default('-') }}</td>
-                                    <td class="fw-bold text-primary">{{ player.batting_points | default(0) }}</td>
-                                    <td>{{ player.wickets | default(0) }}</td>
-                                    <td>{{ player.economy | default('-') }}</td>
-                                    <td class="fw-bold text-success">{{ player.bowling_points | default(0) }}</td>
-                                    <td class="fw-bold text-danger">{{ player.total_points | default(0) | round(2) }}</td>
-                                </tr>
-                                {% endfor %}
-                                <tr class="table-warning fw-bold">
-                                    <td>🏆 Team Total</td>
-                                    <td>{{ team.total_runs | default(0) }}</td>
-                                    <td>{{ team.total_strike_rate | default('-') }}</td>
-                                    <td class="text-primary">{{ team.total_batting_points | default(0) }}</td>
-                                    <td>{{ team.total_wickets | default(0) }}</td>
-                                    <td>{{ team.total_economy | default('-') }}</td>
-                                    <td class="text-success">{{ team.total_bowling_points | default(0) }}</td>
-                                    <td class="text-danger">{{ team.total_player_points | default(0) | round(2) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div> <!-- End table-responsive -->
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <!-- Buttons to Update Data -->
+    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+        <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
+            <button type="submit" name="update_live_data" value="true" class="btn btn-primary w-100">
+                🔄 Update Live Data [DO NOT USE]
+            </button>
+        </form>
+
+        <form method="POST" action="{{ url_for('show_points') }}" onsubmit="showUpdatingStatus()">
+            <button type="submit" name="update_from_csv" value="true" class="btn btn-success w-100">
+                📂 Update Points from CSV
+            </button>
+        </form>
     </div>
 </div>
 
+<!-- Teams Display -->
+<div class="row">
+    {% for team in teams %}
+    <div class="col-lg-6 col-md-12 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-dark text-white text-center">
+                <h3 class="fw-bold">{{ team.name }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover text-center align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Player</th>
+                                <th>Runs</th>
+                                <th>SR</th>
+                                <th>Bat Pts</th>
+                                <th>Wickets</th>
+                                <th>Eco</th>
+                                <th>Bowl Pts</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set sorted_players = team.players|sort(attribute='total_points', reverse=True) %}
+                            {% for player in sorted_players %}
+                            <tr class="{% if loop.index > 8 %}player-out-of-top {% endif %}{{ 'text-muted' if loop.index > 8 }}">
+                                <td class="fw-bold text-wrap">{{ player.name }}</td>
+                                <td>{{ player.runs | default(0) }}</td>
+                                <td>{{ player.strike_rate | default('-') }}</td>
+                                <td class="fw-bold text-primary">{{ player.batting_points | default(0) }}</td>
+                                <td>{{ player.wickets | default(0) }}</td>
+                                <td>{{ player.economy | default('-') }}</td>
+                                <td class="fw-bold text-success">{{ player.bowling_points | default(0) }}</td>
+                                <td class="fw-bold text-danger">{{ player.total_points | default(0) | round(2) }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="table-warning fw-bold">
+                                <td>🏆 Team Total</td>
+                                <td>{{ team.total_runs | default(0) }}</td>
+                                <td>{{ team.total_strike_rate | default('-') }}</td>
+                                <td class="text-primary">{{ team.total_batting_points | default(0) }}</td>
+                                <td>{{ team.total_wickets | default(0) }}</td>
+                                <td>{{ team.total_economy | default('-') }}</td>
+                                <td class="text-success">{{ team.total_bowling_points | default(0) }}</td>
+                                <td class="text-danger">{{ team.total_player_points | default(0) | round(2) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> <!-- End table-responsive -->
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
 <!-- JavaScript for Status Messages -->
 <script>
     function showUpdatingStatus() {
@@ -111,7 +109,6 @@
         }
     };
 </script>
-
 <style>
     @media (max-width: 768px) {
         .table-responsive {
@@ -122,6 +119,14 @@
             padding: 8px;
         }
     }
+    .player-out-of-top {
+        background-color: #f8f9fa;
+    }
+    .player-out-of-top td {
+        opacity: 0.6;
+    }
+    .player-out-of-top .fw-bold {
+        color: #6c757d !important;
+    }
 </style>
-
 {% endblock %}

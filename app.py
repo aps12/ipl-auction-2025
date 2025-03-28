@@ -16,6 +16,28 @@ init_db(app)
 # Initialize Flask-Migrate for schema migrations
 migrate = Migrate(app, db)
 
+import pandas as pd
+
+def load_players_from_csv(csv_file_path="players.csv"):
+    try:
+        # Read the CSV file into a pandas DataFrame
+        df = pd.read_csv(csv_file_path)
+        
+        # Extract the 'players' column into a list
+        player_list = df['players'].tolist()
+        
+        print(f"Successfully loaded {len(player_list)} players from '{csv_file_path}'.")
+        return player_list
+    except FileNotFoundError:
+        print(f"Error: The file '{csv_file_path}' was not found.")
+        raise  # Re-raise the FileNotFoundError
+    except KeyError:
+        print(f"Error: The CSV file does not have a column named 'players'.")
+        raise  # Re-raise the KeyError
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        raise  # Re-raise any other unexpected errors
+
 # Homepage with visualizations
 @app.route("/")
 def home():
@@ -84,9 +106,7 @@ def add_teams():
     teams = Team.query.options(db.joinedload(Team.players)).all()
 
     # Fixed list of players to choose from
-    fixed_players_list =  [
-    "Abdul Samad", "Abhinav Manohar", "Abhishek Sharma", "Abishek Porel", "Aiden Markram", "Ajinkya Rahane", "Akash Deep", "Akash Madhwal", "Alzarri Joseph", "Amit Mishra", "Andre Russell", "Angkrish Raghuvanshi", "Anmolpreet Singh", "Anrich Nortje", "Anshul Kamboj", "Anuj Rawat", "Anukul Roy", "Arshad Khan", "Arshdeep Singh", "Arshin Atul Kulkarni", "Ashton Turner", "Ashutosh Sharma", "Atharva Taide", "Avesh Khan", "Axar Patel", "Ayush Badoni", "Azmatullah Omarzai", "B R Sharath", "Bhuvneshwar Kumar", "Cameron Green", "Darshan Nalkande", "Daryl Mitchell", "David Miller", "David Warner", "Deepak Chahar", "Deepak Hooda", "Devdutt Padikkal", "Dewald Brevis", "Dhruv Jurel", "Dinesh Karthik", "Donovan Ferreira", "Faf Du Plessis", "Gerald Coetzee", "Glenn Maxwell", "Gulbadin Naib", "Hardik Pandya", "Harpreet Bhatia", "Harpreet Brar", "Harshal Patel", "Harshit Rana", "Heinrich Klaasen", "Ishan Kishan", "Ishant Sharma", "Jake Fraser - McGurk", "Jasprit Bumrah", "Jaydev Unadkat", "Jhye Richardson", "Jitesh Sharma", "Jonny Bairstow", "Jos Buttler", "Josh Little", "K L Rahul", "Kagiso Rabada", "Kane Williamson", "Karn Sharma", "Keshav Maharaj", "Khaleel Ahmed", "Krunal Pandya", "Kuldeep Sen", "Kuldeep Yadav", "Kumar Kushagra", "Kwena Maphaka", "Lalit Yadav", "Liam Livingstone", "Lizaad Williams", "Lockie Ferguson", "Luke Wood", "M Siddharth", "MS Dhoni", "Maheesh Theekshana", "Mahipal Lomror", "Manav Suthar", "Manish Pandey", "Marco Jansen", "Marcus Stoinis", "Matheesha Pathirana", "Matt Henry", "Matthew Wade", "Mayank Agarwal", "Mayank Dagar", "Mayank Markande", "Mayank Yadav", "Mitchell Marsh", "Mitchell Santner", "Mitchell Starc", "Moeen Ali", "Mohammad Nabi", "Mohammed Siraj", "Mohit Sharma", "Mohsin Khan", "Mukesh Kumar", "Mustafizur Rahman", "Naman Dhir", "Nandre Burger", "Nathan Ellis", "Naveen-Ul-Haq", "Nehal Wadhera", "Nicholas Pooran", "Nitish Kumar Reddy", "Nitish Rana", "Noor Ahmad", "Nuwan Thushara", "Pat Cummins", "Phil Salt", "Piyush Chawla", "Prabhsimran Singh", "Prithvi Shaw", "Quinton De Kock", "Rachin Ravindra", "Rahmanullah Gurbaz", "Rahul Chahar", "Rahul Tewatia", "Rahul Tripathi", "Rajat Patidar", "Ramandeep Singh", "Rashid Khan", "Rasikh Salam", "Ravi Bishnoi", "Ravichandran Ashwin", "Ravindra Jadeja", "Reece Topley", "Richard Gleeson", "Ricky Bhui", "Rilee Rossouw", "Rinku Singh", "Rishabh Pant", "Riyan Parag", "Rohit Sharma", "Romario Shepherd", "Rovman Powell", "Ruturaj Gaikwad", "Sai Kishore", "Sai Sudharsan", "Sam Curran", "Sameer Rizwi", "Sandeep Sharma", "Sandeep Warrier", "Sanju Samson", "Sanvir Singh", "Saurav Chauhan", "Shahbaz Ahmed", "Shahrukh Khan", "Shai Hope", "Shams Mulani", "Shardul Thakur", "Shashank Singh", "Shikhar Dhawan", "Shimron Hetmyer", "Shivam Dube", "Shivam Singh", "Shreyas Gopal", "Shreyas Iyer", "Shubham Dubey", "Shubman Gill", "Sikandar Raza", "Simarjeet Singh", "Spencer Johnson", "Sumit Kumar", "Sunil Narine", "Suryakumar Yadav", "Suyash S Prabhudessai", "Swapnil Singh", "T Natarajan", "Tanush Kotian", "Tilak Varma", "Tim David", "Tom Kohler- Cadmore", "Travis Head", "Trent Boult", "Tristan Stubbs", "Tushar Deshpande", "Umesh Yadav", "Vaibhav Arora", "Varun Chakaravarthy", "Venkatesh Iyer", "Vidwath Kaverappa", "Vijay Shankar", "Vijayakanth Viyaskanth", "Virat Kohli", "Vyshak Vijaykumar", "Washington Sundar", "Will Jacks", "Wriddhiman Saha", "Yash Dayal", "Yash Thakur", "Yashasvi Jaiswal", "Yudhvir Singh", "Yuzvendra Chahal"
-    ]
+    fixed_players_list = load_players_from_csv()
 
     return render_template("add_teams.html", fixed_players_list=fixed_players_list, teams=teams)
 
@@ -109,6 +129,81 @@ import threading
 import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import Player, db
+
+
+@app.route("/edit_team/<int:team_id>", methods=["GET", "POST"])
+def edit_team(team_id):
+    team = Team.query.get_or_404(team_id)
+
+    if request.method == "POST":
+        team_name = request.form.get("team_name")
+        selected_players_json = request.form.get("selected_players")
+
+        try:
+            player_names = json.loads(selected_players_json) if selected_players_json else []
+        except json.JSONDecodeError:
+            player_names = []
+
+        if not team_name or not player_names:
+            flash("Team name and players are required.", "danger")
+            return redirect(url_for("edit_team", team_id=team_id))
+
+        # Update team name
+        team.name = team_name
+
+        # Fetch current players assigned to the team
+        existing_players = {player.name: player for player in team.players}
+
+        # Players that should be assigned to the team
+        new_players = []
+        for player_name in player_names:
+            if player_name in existing_players:
+                # Player already in the team, keep them
+                new_players.append(existing_players[player_name])
+            else:
+                # Check if player exists elsewhere
+                player = Player.query.filter_by(name=player_name).first()
+                if player:
+                    if player.team_id:  
+                        flash(f"Player {player_name} is already in another team!", "danger")
+                        return redirect(url_for("edit_team", team_id=team_id))
+                    else:
+                        player.team_id = team_id  # Assign to this team
+                else:
+                    player = Player(name=player_name, team_id=team_id)  # Create new player
+                    db.session.add(player)
+                
+                new_players.append(player)
+
+        # Remove players no longer in the team
+        removed_players = [p for p in existing_players.values() if p.name not in player_names]
+        for player in removed_players:
+            # Check if the player is in any other team
+            other_teams_count = Player.query.filter(Player.name == player.name, Player.team_id != team_id).count()
+            if other_teams_count == 0:
+                db.session.delete(player)  # Delete player from database
+            else:
+                player.team_id = None  # Unassign player from this team (if model allows NULL)
+
+        # Update team's players
+        team.players = new_players
+
+        db.session.commit()
+        flash(f"Team {team_name} updated successfully!", "success")
+        return redirect(url_for("edit_team", team_id=team_id))
+
+    # Fetch current players
+    current_players = [player.name for player in team.players]
+
+    # Fixed list of players
+    fixed_players_list = load_players_from_csv()
+
+    return render_template("edit_team.html", 
+                           team=team, 
+                           current_players=current_players, 
+                           fixed_players_list=fixed_players_list)
+
+
 
 @app.route('/show_points', methods=['GET', 'POST'])
 def show_points():

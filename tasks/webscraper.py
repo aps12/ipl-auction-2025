@@ -200,6 +200,11 @@ def update_live_data():
             driver.quit()
 
             df = pd.DataFrame(rows, columns=headers)
+            if stat_type == "Batting":
+                df.to_csv("ipl_batting_stats_2025.csv", index=False)
+            else:
+                df.to_csv("ipl_bowling_stats_2025.csv", index=False)
+                
             return df
 
         except Exception as e:
