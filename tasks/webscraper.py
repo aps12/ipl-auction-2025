@@ -73,7 +73,7 @@ def update_live_data():
         """Scrape IPL 2025 Batting or Bowling stats in headless mode."""
 
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")  # New headless mode
+        # options.add_argument("--headless=new")  # New headless mode
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
