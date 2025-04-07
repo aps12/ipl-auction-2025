@@ -11,31 +11,27 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 def update_database_from_live_data(merged_df):
-    """Updates the database with IPL stats from live data."""
-    
+    """Updates all player entries by name across all teams."""
+
     from app import app
-    from models import Player, Team, db
+    from models import Player, db
     import pandas as pd
 
     with app.app_context():
         try:
             for _, row in merged_df.iterrows():
-                # 🔹 Extract player name from CSV
                 player_name = row["Player"].strip()
 
-                # 🔹 Find the player in DB to get the team
-                player = Player.query.filter(Player.name.ilike(player_name)).first()
+                # 🔹 Find all matching player rows by name (across all teams)
+                matching_players = Player.query.filter(
+                    Player.name.ilike(player_name)
+                ).all()
 
-                if not player:
-                    print(f"⚠️ Skipping {player_name}: Player not found in DB.")
+                if not matching_players:
+                    print(f"⚠️ No player records found for '{player_name}'")
                     continue
 
-                # 🔹 Get player's team from the database
-                team_id = player.team_id
-                team = Team.query.get(team_id) if team_id else None
-                team_name = team.name if team else "Unknown"
-
-                # 🔹 Extract numerical stats safely
+                # 🔹 Extract stats safely
                 try:
                     runs = int(float(row["Runs"])) if pd.notna(row["Runs"]) else 0
                     strike_rate = float(row["SR"]) if pd.notna(row["SR"]) else 0.0
@@ -45,23 +41,20 @@ def update_database_from_live_data(merged_df):
                     print(f"⚠️ Invalid data for {player_name}, skipping row.")
                     continue
 
-                # 🔹 Update player stats
-                player.runs = runs
-                player.strike_rate = strike_rate
-                player.wickets = wickets
-                player.economy = economy
+                # 🔹 Update all rows with this player name
+                for player in matching_players:
+                    player.runs = runs
+                    player.strike_rate = strike_rate
+                    player.wickets = wickets
+                    player.economy = economy
+                    print(f"✅ Updated stats for {player.name} (Team ID: {player.team_id})")
 
-                print(f"✅ Updated stats for {player_name} (Team: {team_name})")
-
-            # 🔹 Commit all changes
             db.session.commit()
-            print("✅ Live data updated successfully in the database!")
+            print("✅ All matching players updated successfully!")
 
         except Exception as e:
-            # 🔹 Comprehensive error handling
-            db.session.rollback()  # Rollback on error
+            db.session.rollback()
             print(f"❌ Error updating database: {e}")
-            # Optionally, you could log the full traceback for debugging
             import traceback
             traceback.print_exc()
 
@@ -268,7 +261,7 @@ def update_stats():
     from app import app  
     from models import Player, Team, db
 
-    """Read stats from CSV and update the database."""
+    """Read stats from CSV and update all matching player records in the database."""
     csv_file = "ipl_combined_stats_2025.csv"
     print(f"📊 Updating stats from {csv_file}...")
 
@@ -277,23 +270,14 @@ def update_stats():
             with open(csv_file, "r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-
-                    # 🔹 Extract player name from CSV
                     player_name = row["Player"].strip()
 
-                    # 🔹 Find the player in DB to get the team
-                    player = Player.query.filter(Player.name.ilike(player_name)).first()
+                    # 🔹 Find ALL players with this name (regardless of team)
+                    matching_players = Player.query.filter(Player.name.ilike(player_name)).all()
 
-                    if not player:
+                    if not matching_players:
                         print(f"⚠️ Skipping {player_name}: Player not found in DB.")
                         continue
-
-                    # 🔹 Get player's team from the database
-                    team_id = player.team_id
-                    team = Team.query.get(team_id) if team_id else None
-                    team_name = team.name if team else "Unknown"
-
-                    print(f"✅ Found {player_name} in DB, Team: {team_name}")
 
                     # 🔹 Extract numerical stats safely
                     try:
@@ -305,17 +289,23 @@ def update_stats():
                         print(f"⚠️ Invalid data for {player_name}, skipping row.")
                         continue
 
-                    # 🔹 Update player stats
-                    player.runs = runs
-                    player.strike_rate = strike_rate
-                    player.wickets = wickets
-                    player.economy = economy
+                    # 🔹 Update ALL matching player records
+                    for player in matching_players:
+                        player.runs = runs
+                        player.strike_rate = strike_rate
+                        player.wickets = wickets
+                        player.economy = economy
 
-                    print(f"✅ Updated stats for {player_name} ({team_name})")
+                        # Optional: show the team
+                        team = Team.query.get(player.team_id) if player.team_id else None
+                        team_name = team.name if team else "Unknown"
+                        print(f"✅ Updated stats for {player.name} (Team: {team_name})")
 
                 db.session.commit()
-                print("✅ Player stats updated successfully!")
+                print("✅ All matching player stats updated successfully!")
 
     except Exception as e:
         db.session.rollback()
         print(f"❌ Error updating stats: {e}")
+        import traceback
+        traceback.print_exc()
