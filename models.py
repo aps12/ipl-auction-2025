@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from database import db
 
 class Team(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     players = db.relationship("Player", backref="team", cascade="all, delete")
 
@@ -46,7 +46,7 @@ class Team(db.Model):
         return round(sum(p.economy for p in top_8_valid_players) / len(top_8_valid_players), 2) if top_8_valid_players else None
 
 class Player(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, index=True)
     runs = db.Column(db.Integer, default=0)
     strike_rate = db.Column(db.Float, default=0.0)

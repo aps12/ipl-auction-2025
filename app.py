@@ -92,6 +92,7 @@ def add_teams():
         # Create and save new team
         team = Team(name=team_name)
         db.session.add(team)
+        db.session.flush()  
 
         # Add selected players to the team
         for player_name in player_names:
