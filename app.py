@@ -210,6 +210,7 @@ def edit_team(team_id):
 def show_points():
     if request.method == 'POST':
         if 'update_live_data' in request.form:
+            print("Triggering update_live_data...")
             update_live_data()  # Function to update from API
         elif 'update_from_csv' in request.form:
             update_stats()  # Function to update from CSV

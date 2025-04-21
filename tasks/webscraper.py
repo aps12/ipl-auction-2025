@@ -62,26 +62,48 @@ def update_database_from_live_data(merged_df):
 
 def update_live_data():
     """Fetch live IPL data, update the database, and save to CSV."""
+    print("Inside the update_live_data() function.")
     def get_ipl_stats(stat_type):
         """Scrape IPL 2025 Batting or Bowling stats in headless mode."""
 
-        options = webdriver.ChromeOptions()
-        # options.add_argument("--headless=new")  # New headless mode
+        print("get ipl stats")
+
+        import os
+        from selenium import webdriver
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.chrome.options import Options
+
+        # Setup Chrome options
+        options = Options()
+        # options.add_argument("--headless=new")  # Optional: run in headless mode
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1920,1080")  
-        options.add_argument("--disable-blink-features=AutomationControlled")  # Bypass bot detection
-        options.add_argument("--log-level=3")  # Suppress logs
-
-        # Add user agent to appear more like a real browser
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--log-level=3")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-        
-        # Experimental options to improve headless reliability
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
+        options.add_experimental_option("useAutomationExtension", False)
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        try:
+            print("Initializing WebDriver...")
+
+            # Full absolute path to chromedriver.exe
+            chromedriver_path = os.path.abspath("chromedriver.exe")
+
+            if not os.path.exists(chromedriver_path):
+                raise FileNotFoundError(f"⚠️ chromedriver not found at: {chromedriver_path}")
+
+            service = Service(executable_path=chromedriver_path)
+            driver = webdriver.Chrome(service=service, options=options)
+
+            print("✅ WebDriver Initialized!")
+
+        except Exception as e:
+            print("❌ WebDriver failed to initialize:", e)
+
+
 
         # from selenium import webdriver
         # from selenium.webdriver.chrome.service import Service
